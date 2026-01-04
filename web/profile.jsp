@@ -1,454 +1,373 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.profileapp.ProfileBean" %>
+<%
+
+    ProfileBean p = (ProfileBean) session.getAttribute("profile");
+    String showSuccess = (String) session.getAttribute("showSuccess");
+    
+    if (p == null) {
+        response.sendRedirect("index.html"); 
+        return;
+    }
+
+    session.removeAttribute("showSuccess");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Created - <%= request.getAttribute("name") != null ? request.getAttribute("name") : "User" %></title>
+    <title>Profile Details | ISTUDENT PROFILE</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-purple: #6a0dad;
-            --light-purple: #9b59b6;
-            --dark-purple: #4b0082;
-            --primary-gold: #ffd700;
-            --light-gold: #fff9c4;
-            --dark-gold: #fbc02d;
+            /* Official UiTM Corporate Colors matched to index.html */
+            --uitm-blue: #002b5c;      
+            --uitm-purple: #702082;    
+            --uitm-gold: #ffcc00;      
+            --uitm-light: #f8f9fa;
             --white: #ffffff;
-            --light-gray: #f8f9fa;
-            --medium-gray: #e9ecef;
-            --dark-gray: #495057;
-            --text-dark: #2c3e50;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --border-color: #dee2e6;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif; 
         }
 
-        body {
-            background: var(--gradient);
-            color: var(--text-dark);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 2rem 0;
-            position: relative;
+        body { 
+            background-color: var(--uitm-light); 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(155, 89, 182, 0.1) 0%, transparent 50%);
-            pointer-events: none;
+        .top-accent {
+            background: var(--uitm-blue);
+            height: 8px;
+            width: 100%;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 1;
+        header {
+            background: var(--white);
+            padding: 25px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--uitm-purple);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        
+        .brand-section {
+           text-align: left;
+           margin-left: 0;
+           padding-left: 0;
+        }
+
+        .brand-section h2 {
+            color: var(--uitm-blue);
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0; 
+        }
+
+        .brand-section p {
+            font-size: 0.85rem;
+            color: #666;
+            border-top: 2px solid var(--uitm-gold);
+            display: inline-block;
+            margin-top: 5px;
+            padding-top: 2px;
+        }
+
+        .container { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 40px 20px; 
         }
 
         .profile-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 
-                var(--shadow),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            position: relative;
+            background: white; 
+            width: 100%; 
+            max-width: 900px; 
+            display: flex;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            border: 1px solid var(--border-color);
+            border-radius: 4px; 
             overflow: hidden;
-            transform: translateY(0);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .profile-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 15px 40px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.3);
-        }
-
-        .profile-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-gold), var(--primary-purple));
-            border-radius: 4px 4px 0 0;
-        }
-
-        .header {
+        .sidebar {
+            background: var(--uitm-blue);
+            color: white;
+            width: 35%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 5px solid var(--uitm-gold);
             text-align: center;
-            margin-bottom: 2.5rem;
-            position: relative;
         }
 
-        .header h1 {
-            color: var(--dark-purple);
-            font-size: 2.8rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--dark-purple), var(--primary-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .accent-bar {
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-gold), var(--primary-purple), var(--light-purple));
-            border-radius: 2px;
-            margin: 1.5rem auto;
-            width: 80px;
-            position: relative;
-        }
-
-        .accent-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: inherit;
-            border-radius: inherit;
-            filter: blur(3px);
-            opacity: 0.7;
-        }
-
-        .profile-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            align-items: start;
-        }
-
-        .profile-sidebar {
-            text-align: center;
-            padding: 2.5rem 2rem;
-            background: linear-gradient(135deg, var(--light-gray), var(--white));
-            border-radius: 16px;
-            border: 1px solid var(--medium-gray);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: sticky;
-            top: 2rem;
-        }
-
-        .avatar {
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--light-purple));
-            border-radius: 50%;
+        .avatar-box {
+            background: white;
+            width: 120px;
+            height: 120px;
+            border: 4px solid var(--uitm-gold);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
-            color: var(--white);
-            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .avatar-box span { 
+            color: var(--uitm-purple);
+            font-size: 60px;
             font-weight: bold;
-            border: 4px solid var(--primary-gold);
-            box-shadow: 0 8px 25px rgba(106, 13, 173, 0.3);
-            transition: all 0.3s ease;
         }
 
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 35px rgba(106, 13, 173, 0.4);
+        .sidebar h2 { 
+            font-size: 20px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
 
-        .profile-name {
-            color: var(--dark-purple);
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            font-size: 1.6rem;
+        .prog-badge {
+            background: var(--uitm-purple);
+            color: white;
+            padding: 5px 15px;
+            border-left: 4px solid var(--uitm-gold);
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
-        .profile-program {
-            color: var(--primary-purple);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+        .content { 
+            padding: 40px;
+            width: 65%;
         }
 
-        .profile-id {
-            color: var(--dark-gray);
-            font-size: 0.95rem;
-            background: var(--light-gray);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            display: inline-block;
-            margin-top: 0.5rem;
+        .content h1 { 
+            color: var(--uitm-blue);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--uitm-purple);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 22px;
         }
 
-        .profile-details {
+        .info-row { 
             display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
         }
 
-        .section {
-            margin-bottom: 2.5rem;
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 16px;
-            border: 1px solid var(--medium-gray);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+        .label { 
+            width: 150px;
+            color: var(--uitm-purple);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
         }
 
-        .section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        .value { 
+            color: var(--uitm-blue);
+            font-size: 15px;
         }
 
-        .section-title {
-            color: var(--dark-purple);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 3px solid var(--primary-gold);
-            font-weight: 700;
-            font-size: 1.4rem;
+        .hobby-tag { 
+            background: var(--uitm-blue);
+            color: white;
+            padding: 3px 10px;
+            font-size: 11px;
+            border-radius: 2px;
+            margin-right: 5px;
+        }
+
+        .intro-box { 
+            background: #f9f9f9;
+            padding: 20px;
+            border-left: 5px solid var(--uitm-gold);
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* --- BUTANG DI BAWAH LAGI --- */
+        .btn-row { 
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            gap: 12px;
+            margin-top: 50px; /* Jarak ke bawah ditambah */
+            justify-content: flex-end; 
         }
 
-        .section-title i {
-            color: var(--primary-purple);
-            font-size: 1.2rem;
-        }
-
-        .detail-group {
-            margin-bottom: 1.8rem;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: var(--dark-purple);
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .detail-label i {
-            color: var(--primary-gold);
-            font-size: 0.9rem;
-        }
-
-        .detail-value {
-            background: linear-gradient(135deg, var(--light-gray), var(--white));
-            padding: 1.2rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-gold);
-            color: var(--text-dark);
-            line-height: 1.7;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .hobbies-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-top: 0.8rem;
-        }
-
-        .hobby-tag {
-            background: linear-gradient(135deg, var(--light-gold), var(--primary-gold));
-            color: var(--dark-purple);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+        .btn { 
+            background: var(--uitm-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
             font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid rgba(180, 149, 31, 0.2);
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
-        }
-
-        .hobby-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-        }
-
-        .actions {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--medium-gray);
-        }
-
-        .btn-back {
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 3px solid #001a38;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.8rem;
-            background: linear-gradient(135deg, var(--primary-purple), var(--dark-purple));
-            color: white;
-            text-decoration: none;
-            padding: 1.2rem 2.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
-            position: relative;
-            overflow: hidden;
+            justify-content: center;
         }
 
-        .btn-back::before {
-            content: '';
-            position: absolute;
+        .btn:hover { 
+            background: var(--uitm-purple); 
+            border-bottom-color: #4a1556; 
+        }
+
+        .modal-overlay {
+            display: <%= (showSuccess != null) ? "flex" : "none" %>;
+            position: fixed;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
         }
 
-        .btn-back:hover::before {
-            left: 100%;
+        .modal-content {
+            background: white;
+            padding: 40px;
+            width: 450px;
+            text-align: center;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-top: 8px solid #2ecc71;
         }
 
-        .btn-back:hover {
-            transform: translateY(-3px);
-            box-shadow: 
-                0 8px 25px rgba(106, 13, 173, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
+        .modal-icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: white;
         }
 
-        @media (max-width: 768px) {
-            .profile-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
-            .profile-card {
-                padding: 2.5rem 1.8rem;
-            }
-            
-            .profile-sidebar {
-                position: relative;
-                top: 0;
-            }
-            
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .avatar {
-                width: 120px;
-                height: 120px;
-                font-size: 2.5rem;
-            }
+        .btn-dismiss {
+            width: 100%;
+            background-color: var(--uitm-blue);
+            color: white;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 20px;
+        }
+        
+        footer {
+            background: var(--uitm-blue);
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="profile-card">
-            <div class="header">
-                <h1>Profile Created Successfully!</h1>
-                <div class="accent-bar"></div>
+
+<div class="top-accent"></div>
+
+<header>
+    <div class="brand-section">
+        <h2>ISTUDENT PROFILE</h2>
+        <p>Universiti Teknologi MARA</p>
+    </div>
+</header>
+
+<div id="successModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-icon-circle"><i class="fas fa-check"></i></div>
+        <div style="font-size: 24px; font-weight: bold; color: var(--uitm-blue); margin-bottom: 10px;">SUCCESSFUL</div>
+        <div style="font-size: 16px; color: #666;">Profile saved successfully!</div>
+        <button onclick="document.getElementById('successModal').style.display='none'" class="btn-dismiss">DISMISS</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="profile-card">
+        <div class="sidebar">
+            <div class="avatar-box">
+                <span><%= p.getName().substring(0,1).toUpperCase() %></span>
             </div>
+            <h2><%= p.getName() %></h2>
+            <div class="prog-badge"><%= p.getProgram() %></div>
+        </div>
+
+        <div class="content">
+            <h1>PROFILE INFORMATION</h1>
             
-            <div class="profile-content">
-                <div class="profile-sidebar">
-                    <div class="avatar">
-                        <%= request.getAttribute("name") != null ? 
-                            ((String)request.getAttribute("name")).substring(0, 1).toUpperCase() : "U" %>
-                    </div>
-                    <h3 class="profile-name"><%= request.getAttribute("name") != null ? request.getAttribute("name") : "User" %></h3>
-                    <p class="profile-program"><%= request.getAttribute("program") != null ? request.getAttribute("program") : "Program" %></p>
-                    <div class="profile-id">
-                        <i class="fas fa-id-card"></i> 
-                        <%= request.getAttribute("studentId") != null ? request.getAttribute("studentId") : "N/A" %>
-                    </div>
-                </div>
-                
-                <div class="profile-details">
-                    <div class="section">
-                        <h3 class="section-title">
-                            <i class="fas fa-user-circle"></i> Personal Information
-                        </h3>
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">
-                                <i class="fas fa-qrcode"></i> Student ID
-                            </div>
-                            <div class="detail-value">
-                                <%= request.getAttribute("studentId") != null ? request.getAttribute("studentId") : "N/A" %>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">
-                                <i class="fas fa-envelope"></i> Email Address
-                            </div>
-                            <div class="detail-value">
-                                <%= request.getAttribute("email") != null ? request.getAttribute("email") : "N/A" %>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">
-                                <i class="fas fa-heart"></i> Hobbies & Interests
-                            </div>
-                            <div class="detail-value">
-                                <% 
-                                    String hobbies = (String) request.getAttribute("hobbies");
-                                    if (hobbies != null && !hobbies.trim().isEmpty()) {
-                                        String[] hobbiesArray = hobbies.split(",");
-                                %>
-                                    <div class="hobbies-list">
-                                        <% for (String hobby : hobbiesArray) { %>
-                                            <span class="hobby-tag"><%= hobby.trim() %></span>
-                                        <% } %>
-                                    </div>
-                                <% } else { %>
-                                    <em style="color: var(--dark-gray);">No hobbies specified</em>
-                                <% } %>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-group">
-                            <div class="detail-label">
-                                <i class="fas fa-comment-dots"></i> Self Introduction
-                            </div>
-                            <div class="detail-value" style="font-style: italic; line-height: 1.7;">
-                                "<%= request.getAttribute("introduction") != null ? request.getAttribute("introduction") : "No introduction provided." %>"
-                            </div>
-                        </div>
-                    </div>
+            <div class="info-row">
+                <span class="label">Full Name</span>
+                <span class="value"><%= p.getName() %></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Student ID</span>
+                <span class="value"><%= p.getStudentId() %></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Academic Program</span>
+                <span class="value"><%= p.getProgram() %></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Email Address</span>
+                <span class="value"><%= p.getEmail() %></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Hobbies</span>
+                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    <% 
+                        if(p.getHobbies() != null && !p.getHobbies().isEmpty()) {
+                            for(String s : p.getHobbies().split(",")) { 
+                    %>
+                        <span class="hobby-tag"><%= s.trim() %></span>
+                    <% 
+                            } 
+                        } 
+                    %>
                 </div>
             </div>
-            
-            <div class="actions">
-                <a href="index.html" class="btn-back">
-                    <i class="fas fa-plus"></i> Create Another Profile
-                </a>
+
+            <div class="intro-box">
+                "<%= p.getIntroduction() %>"
+            </div>
+
+            <div class="btn-row">
+                <a href="index.html" class="btn"><i class="fas fa-home" style="margin-right: 8px;"></i> HOME</a>
             </div>
         </div>
     </div>
+</div>
+
+<footer>
+    &copy; 2025 UNIVERSITI TEKNOLOGI MARA (UITM)
+</footer>
+
 </body>
 </html>
